@@ -129,6 +129,3 @@ class Company:
         """Pay all the employees in this company"""
 
         # TODO: implement this method
-
-person = Employee('vova', 'khabarov', 'dev', 5)
-print(person)

@@ -19,7 +19,7 @@ class Employee:
     first_name: str
     last_name: str
     role: str
-    vacation_days: int = 3
+    vacation_days: int = 25
 
     @property
     def fullname(self):
@@ -66,6 +66,9 @@ class HourlyEmployee(Employee):
 
         self.amount += hours
 
+    def hourly_salary(self):
+        return self.amount * self.hourly_rate
+
 
 # noinspection PyTypeChecker
 @dataclass
@@ -73,6 +76,7 @@ class SalariedEmployee(Employee):
     """Represents employees who are paid on a monthly salary base"""
 
     salary: int = 5000
+
 
 
 # noinspection PyTypeChecker

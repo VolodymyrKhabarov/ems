@@ -19,11 +19,11 @@ class Employee:
     first_name: str
     last_name: str
     role: str
-    vacation_days: int = 25
+    vacation_days: int = 3
 
     @property
     def fullname(self):
-        return f'{self.first_name}, {self.last_name}' # повинен повертати рядок (а повертає кортеж)
+        return f'{self.first_name} {self.last_name}' # повинен повертати рядок (а повертає кортеж)
 
     def __str__(self) -> str:         # TypeError: __str__ returned non-string (type tuple) ПОТРІБЕН ТЕСТ ?!
         """Return a string version of an instance"""

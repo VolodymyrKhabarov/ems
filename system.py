@@ -1,6 +1,5 @@
 """
 A very advanced employee management system
-
 """
 
 import logging
@@ -23,6 +22,7 @@ class Employee:
 
     @property
     def fullname(self):
+        """Return employe's full name"""
 
         return f'{self.first_name} {self.last_name}'
 
@@ -34,23 +34,21 @@ class Employee:
     def take_holiday(self, payout: bool = False) -> None:
         """Take a single holiday or a payout vacation"""
 
-        remaining = self.vacation_days
         if payout:
             if self.vacation_days < 5:
                 msg = f"{self} have not enough vacation days. " \
-                      f"Remaining days: %d. Requested: %d" % (remaining, 5)
+                      f"Remaining days: %d. Requested: %d" % (self.vacation_days, 5)
                 raise ValueError(msg)
             self.vacation_days -= 5
-            msg = "Taking a holiday. Remaining vacation days: %d" % remaining
+            msg = f"Taking a payout vacation. Remaining vacation days: {self.vacation_days}"
             logger.info(msg)
         else:
             if self.vacation_days < 1:
-                remaining = self.vacation_days
                 msg = f"{self} have not enough vacation days. " \
-                      f"Remaining days: %d. Requested: %d" % (remaining, 1)
+                      f"Remaining days: %d. Requested: %d" % (self.vacation_days, 1)
                 raise ValueError(msg)
             self.vacation_days -= 1
-            msg = "Taking a payout. Remaining vacation days: %d" % remaining
+            msg = "Taking a single holiday. Remaining vacation days: {self.vacation_days}"
             logger.info(msg)
 
 
@@ -80,8 +78,9 @@ class SalariedEmployee(Employee):
 class Company:
     """A company representation"""
 
-    title: str
-    employees: list[Employee] = []
+    def __init__(self, title: str, employees: list[Employee] = None):
+        self.title = title
+        self.employees = employees or []
 
     def get_ceos(self) -> list[Employee]:
         """Return employees list with role of CEO"""
@@ -111,22 +110,28 @@ class Company:
         return result
 
     @staticmethod
-    def pay(employee: Employee) -> None:
+    def pay(employee: Employee) -> int:
         """Pay to employee"""
 
         if isinstance(employee, SalariedEmployee):
-            msg = (
-                "Paying monthly salary of %.2f to %s"
-            ) % (employee.salary, employee)
-            logger.info(f"Paying monthly salary to {employee}")
+            msg = f"Paying monthly salary of {employee.salary} to {employee}"
+            logger.info(msg)  # виправив тут
+            return employee.salary
 
         if isinstance(employee, HourlyEmployee):
-            msg = (
-                "Paying %s hourly rate of %.2f for %d hours"
-            ) % (employee, employee.hourly_rate, employee.amount)
+            msg = f"Paying {employee} hourly rate of {employee.hourly_rate} for " \
+                  f"{employee.amount} hours"
             logger.info(msg)
+            return employee.amount * employee.hourly_rate
 
-    def pay_all(self) -> None:
+        return None
+
+    def pay_all(self) -> int:
         """Pay all the employees in this company"""
 
-        # TODO: implement this method
+        result = 0
+
+        for employee in self.employees:
+            result += Company.pay(employee)
+
+        return result

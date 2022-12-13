@@ -23,9 +23,10 @@ class Employee:
 
     @property
     def fullname(self):
-        return f'{self.first_name} {self.last_name}' # повинен повертати рядок (а повертає кортеж)
 
-    def __str__(self) -> str:         # TypeError: __str__ returned non-string (type tuple) ПОТРІБЕН ТЕСТ ?!
+        return f'{self.first_name} {self.last_name}'
+
+    def __str__(self) -> str:
         """Return a string version of an instance"""
 
         return self.fullname
@@ -66,9 +67,6 @@ class HourlyEmployee(Employee):
 
         self.amount += hours
 
-    def hourly_salary(self):
-        return self.amount * self.hourly_rate
-
 
 # noinspection PyTypeChecker
 @dataclass
@@ -76,7 +74,6 @@ class SalariedEmployee(Employee):
     """Represents employees who are paid on a monthly salary base"""
 
     salary: int = 5000
-
 
 
 # noinspection PyTypeChecker

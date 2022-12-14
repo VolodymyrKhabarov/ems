@@ -41,7 +41,7 @@ class Employee:
                       f"Remaining days: %d. Requested: %d" % (self.vacation_days, 5)
                 raise ValueError(msg)
             self.vacation_days -= 5
-            msg = f"Taking a payout vacation. Remaining vacation days: {self.vacation_days}"
+            msg = f"Taking a payout vacation. Remaining vacation days: %d " % (self.vacation_days)
             logger.info(msg)
         else:
             if self.vacation_days < 1:
@@ -49,7 +49,7 @@ class Employee:
                       f"Remaining days: %d. Requested: %d" % (self.vacation_days, 1)
                 raise ValueError(msg)
             self.vacation_days -= 1
-            msg = "Taking a single holiday. Remaining vacation days: {self.vacation_days}"
+            msg = "Taking a single holiday. Remaining vacation days: %d " % (self.vacation_days)
             logger.info(msg)
 
 

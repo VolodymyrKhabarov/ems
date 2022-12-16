@@ -36,24 +36,27 @@ class EmsTestCase(unittest.TestCase):
 
         self.assertEqual('volodymyr khabarov', self.person_1.fullname)
 
-    def test_take_holiday(self):
-        """This test case verifies 'take_holiday' method of Employee class"""
+    def test_take_payout_holiday(self):
+        """This test case verifies 'take_payout_holiday' method of Employee class"""
 
-        self.person_1.take_holiday(payout=True)
+        self.person_1.take_payout_holiday()
         self.assertEqual(0, self.person_1.vacation_days)
 
         with self.assertRaises(ValueError) as msg:
-            self.person_4.take_holiday(payout=True)
+            self.person_4.take_payout_holiday()
 
         self.assertEqual(str(msg.exception),
                          'andrii shevchenko have not enough vacation days. '
                          'Remaining days: 4. Requested: 5')
 
-        self.person_2.take_holiday(payout=False)
+    def test_take_single_holiday(self):
+        """This test case verifies 'take_single_holiday' method of Employee class"""
+
+        self.person_2.take_single_holiday()
         self.assertEqual(0, self.person_2.vacation_days)
 
         with self.assertRaises(ValueError) as msg:
-            self.person_3.take_holiday(payout=False)
+            self.person_3.take_single_holiday()
 
         self.assertEqual(str(msg.exception),
                          'svitlana shevchuk have not enough vacation days. '

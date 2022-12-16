@@ -31,25 +31,27 @@ class Employee:
 
         return self.fullname
 
-    def take_holiday(self, payout: bool = False) -> None:
-        """Take a single holiday or a payout vacation"""
+    def take_payout_holiday(self):
+        """Take a payout vacation"""
 
-        if payout:
-            if self.vacation_days < 5:
-                msg = f"{self} have not enough vacation days. " \
-                      f"Remaining days: %d. Requested: %d" % (self.vacation_days, 5)
-                raise ValueError(msg)
-            self.vacation_days -= 5
-            msg = f"Taking a payout vacation. Remaining vacation days: %d " % (self.vacation_days)
-            logger.info(msg)
-        else:
-            if self.vacation_days < 1:
-                msg = f"{self} have not enough vacation days. " \
-                      f"Remaining days: %d. Requested: %d" % (self.vacation_days, 1)
-                raise ValueError(msg)
-            self.vacation_days -= 1
-            msg = "Taking a single holiday. Remaining vacation days: %d " % (self.vacation_days)
-            logger.info(msg)
+        if self.vacation_days < 5:
+            msg = f"{self} have not enough vacation days. " \
+                  f"Remaining days: %d. Requested: %d" % (self.vacation_days, 5)
+            raise ValueError(msg)
+        self.vacation_days -= 5
+        msg = f"Taking a payout vacation. Remaining vacation days: %d " % (self.vacation_days)
+        logger.info(msg)
+
+    def take_single_holiday(self):
+        """Take a single holiday"""
+
+        if self.vacation_days < 1:
+            msg = f"{self} have not enough vacation days. " \
+                  f"Remaining days: %d. Requested: %d" % (self.vacation_days, 1)
+            raise ValueError(msg)
+        self.vacation_days -= 1
+        msg = "Taking a single holiday. Remaining vacation days: %d " % (self.vacation_days)
+        logger.info(msg)
 
 
 # noinspection PyTypeChecker

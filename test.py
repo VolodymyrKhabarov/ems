@@ -1,3 +1,7 @@
+"""
+This module is for testing the "system" module.
+"""
+
 import unittest
 
 import system
@@ -14,11 +18,12 @@ class EmsTestCase(unittest.TestCase):
         self.person_2 = system.Employee('serhii', 'filatov', 'CEO', 1)
         self.person_3 = system.Employee('svitlana', 'shevchuk', 'manager', 0)
         self.person_4 = system.Employee('andrii', 'shevchenko', 'dev', 4)
-        self.hE_CEO = system.HourlyEmployee('Petro', 'Dudu', 'CEO')
-        self.sE_manager = system.SalariedEmployee('vasyl', 'stus', 'manager')
-        self.comp = system.Company('Alevel', [self.hE_CEO, self.sE_manager])
+        self.he_ceo = system.HourlyEmployee('Petro', 'Dudu', 'CEO')
+        self.se_manager = system.SalariedEmployee('vasyl', 'stus', 'manager')
+        self.comp = system.Company('Alevel', [self.he_ceo, self.se_manager])
+        self.softserve = system.Company('SoftServe', [self.person_1])
 
-    def test_initializer_Employee(self):
+    def test_initializer_employee(self):
         "This test case verifies initialization of Employee class instance."
 
         self.assertEqual('volodymyr', self.person_1.first_name)
@@ -33,57 +38,66 @@ class EmsTestCase(unittest.TestCase):
 
     def test_take_holiday(self):
         """This test case verifies 'take_holiday' method of Employee class"""
+
         self.person_1.take_holiday(payout=True)
         self.assertEqual(0, self.person_1.vacation_days)
 
-        # self.person_4.take_holiday(payout=True) - тут не проходить тест
-        # self.assertRaises(ValueError, self.person_4.take_holiday(payout=True)) - тут не проходить тест
+        with self.assertRaises(ValueError) as msg:
+            self.person_4.take_holiday(payout=True)
+
+        self.assertEqual(str(msg.exception),
+                         'andrii shevchenko have not enough vacation days. '
+                         'Remaining days: 4. Requested: 5')
 
         self.person_2.take_holiday(payout=False)
         self.assertEqual(0, self.person_2.vacation_days)
 
-        # self.person_3.take_holiday(False) - тут не проходить тест
-        # self.assertRaises(ValueError, self.person_3.take_holiday(payout=True)) - тут не проходить тест
+        with self.assertRaises(ValueError) as msg:
+            self.person_3.take_holiday(payout=False)
 
-    def test_initializer_HourlyEmployee(self):
+        self.assertEqual(str(msg.exception),
+                         'svitlana shevchuk have not enough vacation days. '
+                         'Remaining days: 0. Requested: 1')
+
+    def test_initializer_hourlyemployee(self):
         "This test case verifies initialization of HourlyEmployee class instance."
 
-        self.assertEqual('Petro', self.hE_CEO.first_name)
-        self.assertEqual('Dudu', self.hE_CEO.last_name)
-        self.assertEqual('CEO', self.hE_CEO.role)
-        self.assertEqual(25, self.hE_CEO.vacation_days)
-        self.assertEqual(0, self.hE_CEO.amount)
-        self.assertEqual(50, self.hE_CEO.hourly_rate)
+        self.assertEqual('Petro', self.he_ceo.first_name)
+        self.assertEqual('Dudu', self.he_ceo.last_name)
+        self.assertEqual('CEO', self.he_ceo.role)
+        self.assertEqual(25, self.he_ceo.vacation_days)
+        self.assertEqual(0, self.he_ceo.amount)
+        self.assertEqual(50, self.he_ceo.hourly_rate)
 
     def test_log_work(self):
         """This test case verifies 'log_work' method of HourlyEmployee class"""
 
-        self.hE_CEO.log_work(7)
-        self.assertEqual(7, self.hE_CEO.amount)
+        self.he_ceo.log_work(7)
+        self.assertEqual(7, self.he_ceo.amount)
 
-    def test_inintializer_SalariedEmployee(self):
+    def test_inintializer_salariedemployee(self):
         "This test case verifies initialization of SalariedEmployee class instance."
 
-        self.assertEqual('vasyl', self.sE_manager.first_name)
-        self.assertEqual('stus', self.sE_manager.last_name)
-        self.assertEqual('manager', self.sE_manager.role)
-        self.assertEqual(5000, self.sE_manager.salary)
+        self.assertEqual('vasyl', self.se_manager.first_name)
+        self.assertEqual('stus', self.se_manager.last_name)
+        self.assertEqual('manager', self.se_manager.role)
+        self.assertEqual(5000, self.se_manager.salary)
 
-    def test_inintializer_Company(self):
+    def test_inintializer_company(self):
         "This test case verifies initialization of Company class instance."
 
         self.assertEqual('Alevel', self.comp.title)
-        self.assertEqual([self.hE_CEO, self.sE_manager], self.comp.employees)
+        self.assertEqual([self.he_ceo, self.se_manager], self.comp.employees)
 
     def test_get_ceos(self):
         """This test case verifies 'get_ceos' method of Company class"""
 
-        self.assertEqual([self.hE_CEO], self.comp.get_ceos())
+        self.assertEqual([self.he_ceo], self.comp.get_ceos())
 
     def test_get_managers(self):
         """This test case verifies 'get_managers' method of Company class"""
 
-        self.assertEqual([self.sE_manager], self.comp.get_managers())
+        self.assertEqual([self.se_manager], self.comp.get_managers())
 
     def test_get_developers(self):
         """This test case verifies 'get_developers' method of Company class"""
@@ -93,14 +107,20 @@ class EmsTestCase(unittest.TestCase):
     def test_pay(self):
         """This test case verifies 'pay' method of Company class"""
 
-        self.hE_CEO.log_work(7)
-        self.assertEqual(350, self.comp.pay(self.hE_CEO))
-        self.assertEqual(5000, self.comp.pay(self.sE_manager))
+        self.he_ceo.log_work(7)
+        self.assertEqual(350, self.comp.pay(self.he_ceo))
+        self.assertEqual(5000, self.comp.pay(self.se_manager))
+
+        with self.assertRaises(TypeError) as msg:
+            self.softserve.pay(self.person_1)
+
+        self.assertEqual(str(msg.exception),
+                         'Очікується екземпляр класу SalariedEmployee або HourlyEmployee')
 
     def test_pay_all(self):
         """This test case verifies 'pay_all' method of Company class"""
 
-        self.hE_CEO.log_work(7)
+        self.he_ceo.log_work(7)
         self.assertEqual(5350, self.comp.pay_all())
 
 

@@ -1,6 +1,5 @@
 """
 A very advanced employee management system
-
 """
 
 import logging
@@ -125,7 +124,8 @@ class Company:
             logger.info(msg)
             return employee.amount * employee.hourly_rate
 
-        return None
+        msg = "Очікується екземпляр класу SalariedEmployee або HourlyEmployee"
+        raise TypeError(msg)
 
     def pay_all(self) -> int:
         """Pay all the employees in this company"""
@@ -136,4 +136,3 @@ class Company:
             result += Company.pay(employee)
 
         return result
-    

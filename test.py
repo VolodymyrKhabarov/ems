@@ -110,8 +110,8 @@ class EmsTestCase(unittest.TestCase):
     def test_pay(self):
         """This test case verifies 'pay' method of Company class"""
 
-        self.he_ceo.log_work(7)
-        self.assertEqual(350, self.comp.pay(self.he_ceo))
+        self.he_ceo.log_work(7.35)
+        self.assertEqual(367.5, self.comp.pay(self.he_ceo))
         self.assertEqual(5000, self.comp.pay(self.se_manager))
 
         with self.assertRaises(TypeError) as msg:
@@ -123,8 +123,8 @@ class EmsTestCase(unittest.TestCase):
     def test_pay_all(self):
         """This test case verifies 'pay_all' method of Company class"""
 
-        self.he_ceo.log_work(7)
-        self.assertEqual(5350, self.comp.pay_all())
+        self.he_ceo.log_work(7.35)
+        self.assertEqual(5367.5, self.comp.pay_all())
 
 
 if __name__ == '__main__':

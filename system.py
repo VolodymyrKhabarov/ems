@@ -124,7 +124,7 @@ class Company:
             msg = f"Paying {employee} hourly rate of {employee.hourly_rate} for " \
                   f"{employee.amount} hours"
             logger.info(msg)
-            return employee.amount * employee.hourly_rate
+            return round(employee.amount * employee.hourly_rate, 2)
 
         msg = "Очікується екземпляр класу SalariedEmployee або HourlyEmployee"
         raise TypeError(msg)

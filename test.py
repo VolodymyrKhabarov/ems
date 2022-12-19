@@ -20,8 +20,9 @@ class EmsTestCase(unittest.TestCase):
         self.person_4 = system.Employee('andrii', 'shevchenko', 'dev', 4)
         self.he_ceo = system.HourlyEmployee('Petro', 'Dudu', 'CEO')
         self.se_manager = system.SalariedEmployee('vasyl', 'stus', 'manager')
-        self.comp = system.Company('Alevel', [self.he_ceo, self.se_manager])
-        self.softserve = system.Company('SoftServe', [self.person_1])
+        self.comp = system.Company('Alevel', 5367.5, [self.he_ceo, self.se_manager])
+        self.softserve = system.Company('SoftServe', 10000, [self.person_1])
+        self.epam = system.Company('Epam', 0, [self.se_manager])
 
     def test_initializer_employee(self):
         "This test case verifies initialization of Employee class instance."
@@ -30,6 +31,7 @@ class EmsTestCase(unittest.TestCase):
         self.assertEqual('khabarov', self.person_1.last_name)
         self.assertEqual('dev', self.person_1.role)
         self.assertEqual(5, self.person_1.vacation_days)
+        self.assertEqual(0, self.person_1.card)
 
     def test_fullname(self):
         """This test case verifies 'fullname' method of Employee class"""
@@ -91,6 +93,7 @@ class EmsTestCase(unittest.TestCase):
 
         self.assertEqual('Alevel', self.comp.title)
         self.assertEqual([self.he_ceo, self.se_manager], self.comp.employees)
+        self.assertEqual(5367.5, self.comp.bank_account)
 
     def test_get_ceos(self):
         """This test case verifies 'get_ceos' method of Company class"""
@@ -124,7 +127,17 @@ class EmsTestCase(unittest.TestCase):
         """This test case verifies 'pay_all' method of Company class"""
 
         self.he_ceo.log_work(7.35)
-        self.assertEqual(5367.5, self.comp.pay_all())
+        self.comp.pay_all()
+        self.assertEqual(367.5, self.he_ceo.card)
+        self.assertEqual(5000, self.se_manager.card)
+        self.assertEqual(0, self.comp.bank_account)
+
+        with self.assertRaises(ValueError) as msg:
+            self.epam.pay_all()
+
+        self.assertEqual(str(msg.exception),
+                         "Epam does not have enough money in its bank account. " \
+                         "Remaining balance: 0. Requested: 5000")
 
 
 if __name__ == '__main__':

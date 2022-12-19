@@ -19,6 +19,7 @@ class Employee:
     last_name: str
     role: str
     vacation_days: int = 25
+    card: int = 0
 
     @property
     def fullname(self):
@@ -80,9 +81,10 @@ class SalariedEmployee(Employee):
 class Company:
     """A company representation"""
 
-    def __init__(self, title: str, employees: list[Employee] = None):
+    def __init__(self, title: str, bank_account: float, employees: list[Employee] = None):
         self.title = title
         self.employees = employees or []
+        self.bank_account = bank_account
 
     def get_ceos(self) -> list[Employee]:
         """Return employees list with role of CEO"""
@@ -112,7 +114,7 @@ class Company:
         return result
 
     @staticmethod
-    def pay(employee: Employee) -> int:
+    def pay(employee: Employee):
         """Pay to employee"""
 
         if isinstance(employee, SalariedEmployee):
@@ -129,12 +131,14 @@ class Company:
         msg = "Очікується екземпляр класу SalariedEmployee або HourlyEmployee"
         raise TypeError(msg)
 
-    def pay_all(self) -> int:
+    def pay_all(self):
         """Pay all the employees in this company"""
 
-        result = 0
-
         for employee in self.employees:
-            result += Company.pay(employee)
-
-        return result
+            salary = Company.pay(employee)
+            if self.bank_account < salary:
+                msg = f"{self.title} does not have enough money in its bank account. " \
+                      f"Remaining balance: %d. Requested: %d" % (self.bank_account, salary)
+                raise ValueError(msg)
+            self.bank_account -= salary
+            employee.card += salary

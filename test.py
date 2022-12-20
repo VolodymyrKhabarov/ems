@@ -19,7 +19,9 @@ class EmsTestCase(unittest.TestCase):
         self.person_3 = system.Employee('svitlana', 'shevchuk', 'manager', 0)
         self.person_4 = system.Employee('andrii', 'shevchenko', 'dev', 4)
         self.he_ceo = system.HourlyEmployee('Petro', 'Dudu', 'CEO')
+        self.he_dev = system.HourlyEmployee('Andriy', 'Maksymonko', 'DevOps', hourly_rate=1000)
         self.se_manager = system.SalariedEmployee('vasyl', 'stus', 'manager')
+        self.se_manager_2 = system.SalariedEmployee('max', 'petriv', 'manager', salary=10_000)
         self.comp = system.Company('Alevel', 5367.5, [self.he_ceo, self.se_manager])
         self.softserve = system.Company('SoftServe', 10000, [self.person_1])
         self.epam = system.Company('Epam', 0, [self.se_manager])
@@ -73,6 +75,7 @@ class EmsTestCase(unittest.TestCase):
         self.assertEqual(25, self.he_ceo.vacation_days)
         self.assertEqual(0, self.he_ceo.amount)
         self.assertEqual(50, self.he_ceo.hourly_rate)
+        self.assertEqual(100, self.he_dev.hourly_rate)
 
     def test_log_work(self):
         """This test case verifies 'log_work' method of HourlyEmployee class"""
@@ -87,6 +90,7 @@ class EmsTestCase(unittest.TestCase):
         self.assertEqual('stus', self.se_manager.last_name)
         self.assertEqual('manager', self.se_manager.role)
         self.assertEqual(5000, self.se_manager.salary)
+        self.assertEqual(10_000, self.se_manager_2.salary)
 
     def test_inintializer_company(self):
         "This test case verifies initialization of Company class instance."

@@ -75,7 +75,7 @@ class EmsTestCase(unittest.TestCase):
         self.assertEqual(25, self.he_ceo.vacation_days)
         self.assertEqual(0, self.he_ceo.amount)
         self.assertEqual(50, self.he_ceo.hourly_rate)
-        self.assertEqual(100, self.he_dev.hourly_rate)
+        self.assertEqual(1000, self.he_dev.hourly_rate)
 
     def test_log_work(self):
         """This test case verifies 'log_work' method of HourlyEmployee class"""

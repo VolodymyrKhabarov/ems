@@ -4,7 +4,7 @@ This module is for testing the "system" module.
 
 import unittest
 
-import system
+# import system
 
 
 class EmsTestCase(unittest.TestCase):
@@ -118,8 +118,8 @@ class EmsTestCase(unittest.TestCase):
         """This test case verifies 'pay' method of Company class"""
 
         self.he_ceo.log_work(7.35)
-        self.assertEqual(367.5, self.comp.pay(self.he_ceo))
-        self.assertEqual(5000, self.comp.pay(self.se_manager))
+        self.assertEqual(367.5, self.he_ceo.pay())
+        self.assertEqual(5000, self.se_manager.pay())
 
         with self.assertRaises(TypeError) as msg:
             self.softserve.pay(self.person_1)

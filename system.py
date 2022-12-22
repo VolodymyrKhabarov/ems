@@ -4,37 +4,46 @@ A very advanced employee management system
 
 import logging
 from dataclasses import dataclass
+
 FIXED_PAYOUT_DAYS = 5
 SINGLE_HOLIDAY = 1
+
+
 class PayoutHolidayError(Exception):
     def __init__(self, fullname, vacation_days):
         self.fullname = fullname
         self.vacation_days = vacation_days
+
     def __str__(self):
-        return  f"{self.fullname} have not enough vacation days. " \
-                  f"Remaining days: %d. Requested: %d" % (self.vacation_days, FIXED_PAYOUT_DAYS)
+        return f"{self.fullname} have not enough vacation days. " \
+               f"Remaining days: %d. Requested: %d" % (self.vacation_days, FIXED_PAYOUT_DAYS)
+
 
 class SingleHolidayError(Exception):
     def __init__(self, fullname, vacation_days):
         self.fullname = fullname
         self.vacation_days = vacation_days
+
     def __str__(self):
-        return  f"{self.fullname} have not enough vacation days. " \
-                  f"Remaining days: %d. Requested: %d" % (self.vacation_days, SINGLE_HOLIDAY)
+        return f"{self.fullname} have not enough vacation days. " \
+               f"Remaining days: %d. Requested: %d" % (self.vacation_days, SINGLE_HOLIDAY)
+
 
 class PayAllError(Exception):
     def __init__(self, title, bank_account, employee):
         self.title = title
         self.bank_account = bank_account
         self.employee = employee
+
     def __str__(self):
-        return  f"{self.title} does not have enough money in its bank account. " \
-                      f"Remaining balance: %d. Requested: %d" % (self.bank_account, self.employee.pay())
+        return f"{self.title} does not have enough money in its bank account. " \
+               f"Remaining balance: %d. Requested: %d" % (self.bank_account, self.employee.pay())
 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
 
 # noinspection PyTypeChecker
 @dataclass
@@ -121,7 +130,6 @@ class Company:
 
     def get_employees(self, role):
         return [employee for employee in self.employees if employee.role == role]
-    #
 
     def pay_all(self):
         """Pay all the employees in this company"""

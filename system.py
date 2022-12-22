@@ -9,6 +9,46 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+FIXED_PAYOUT_DAYS = 5
+SINGLE_HOLIDAY = 1
+
+
+class PayoutHolidayError(Exception):
+    "This is an exceptional scenario when vacation_days < FIXED_PAYOUT_DAYS"
+
+    def __init__(self, fullname, vacation_days):
+        self.fullname = fullname
+        self.vacation_days = vacation_days
+
+    def __str__(self):
+        return f"{self.fullname} have not enough vacation days. " \
+               f"Remaining days: %d. Requested: %d" % (self.vacation_days, FIXED_PAYOUT_DAYS)
+
+
+class SingleHolidayError(Exception):
+    "This is an exceptional scenario when vacation_days < SINGLE_HOLIDAY"
+
+    def __init__(self, fullname, vacation_days):
+        self.fullname = fullname
+        self.vacation_days = vacation_days
+
+    def __str__(self):
+        return f"{self.fullname} have not enough vacation days. " \
+               f"Remaining days: %d. Requested: %d" % (self.vacation_days, SINGLE_HOLIDAY)
+
+
+class PayAllError(Exception):
+    "This is an exceptional scenario when bank_account < employee.pay()"
+
+    def __init__(self, title, bank_account, employee):
+        self.title = title
+        self.bank_account = bank_account
+        self.employee = employee
+
+    def __str__(self):
+        return f"{self.title} does not have enough money in its bank account. " \
+               f"Remaining balance: %d. Requested: %d" % (self.bank_account, self.employee.pay())
+
 
 # noinspection PyTypeChecker
 @dataclass
@@ -34,23 +74,17 @@ class Employee:
 
     def take_payout_holiday(self):
         """Take a payout vacation"""
-
-        if self.vacation_days < 5:
-            msg = f"{self} have not enough vacation days. " \
-                  f"Remaining days: %d. Requested: %d" % (self.vacation_days, 5)
-            raise ValueError(msg)
-        self.vacation_days -= 5
+        if self.vacation_days < FIXED_PAYOUT_DAYS:
+            raise PayoutHolidayError(self.fullname, self.vacation_days)
+        self.vacation_days -= FIXED_PAYOUT_DAYS
         msg = f"Taking a payout vacation. Remaining vacation days: %d " % (self.vacation_days)
         logger.info(msg)
 
     def take_single_holiday(self):
         """Take a single holiday"""
-
-        if self.vacation_days < 1:
-            msg = f"{self} have not enough vacation days. " \
-                  f"Remaining days: %d. Requested: %d" % (self.vacation_days, 1)
-            raise ValueError(msg)
-        self.vacation_days -= 1
+        if self.vacation_days < SINGLE_HOLIDAY:
+            raise SingleHolidayError(self.fullname, self.vacation_days)
+        self.vacation_days -= SINGLE_HOLIDAY
         msg = "Taking a single holiday. Remaining vacation days: %d " % (self.vacation_days)
         logger.info(msg)
 
@@ -68,6 +102,13 @@ class HourlyEmployee(Employee):
 
         self.amount += hours
 
+    def pay(self):
+        """Pay to employee"""
+        msg = f"Paying {self.fullname} hourly rate of {self.hourly_rate} for " \
+              f"{self.amount} hours"
+        logger.info(msg)
+        return round(self.amount * self.hourly_rate, 2)
+
 
 # noinspection PyTypeChecker
 @dataclass
@@ -75,6 +116,12 @@ class SalariedEmployee(Employee):
     """Represents employees who are paid on a monthly salary base"""
 
     salary: int = 5000
+
+    def pay(self):
+        """Pay to employee"""
+        msg = f"Paying monthly salary of {self.salary} to {self.fullname}"
+        logger.info(msg)  # виправив тут
+        return self.salary
 
 
 # noinspection PyTypeChecker
@@ -86,59 +133,14 @@ class Company:
         self.employees = employees or []
         self.bank_account = bank_account
 
-    def get_ceos(self) -> list[Employee]:
-        """Return employees list with role of CEO"""
-
-        result = []
-        for employee in self.employees:
-            if employee.role == "CEO":
-                result.append(employee)
-        return result
-
-    def get_managers(self) -> list[Employee]:
-        """Return employees list with role of manager"""
-
-        result = []
-        for employee in self.employees:
-            if employee.role == "manager":
-                result.append(employee)
-        return result
-
-    def get_developers(self) -> list[Employee]:
-        """Return employees list with role of developer"""
-
-        result = []
-        for employee in self.employees:
-            if employee.role == "dev":
-                result.append(employee)
-        return result
-
-    @staticmethod
-    def pay(employee: Employee):
-        """Pay to employee"""
-
-        if isinstance(employee, SalariedEmployee):
-            msg = f"Paying monthly salary of {employee.salary} to {employee}"
-            logger.info(msg)  # виправив тут
-            return employee.salary
-
-        if isinstance(employee, HourlyEmployee):
-            msg = f"Paying {employee} hourly rate of {employee.hourly_rate} for " \
-                  f"{employee.amount} hours"
-            logger.info(msg)
-            return round(employee.amount * employee.hourly_rate, 2)
-
-        msg = "Очікується екземпляр класу SalariedEmployee або HourlyEmployee"
-        raise TypeError(msg)
+    def get_employees(self, role):
+        return [employee for employee in self.employees if employee.role == role]
 
     def pay_all(self):
         """Pay all the employees in this company"""
 
         for employee in self.employees:
-            salary = Company.pay(employee)
-            if self.bank_account < salary:
-                msg = f"{self.title} does not have enough money in its bank account. " \
-                      f"Remaining balance: %d. Requested: %d" % (self.bank_account, salary)
-                raise ValueError(msg)
-            self.bank_account -= salary
-            employee.card += salary
+            if self.bank_account < employee.pay():
+                raise PayAllError(self.title, self.bank_account, employee)
+            self.bank_account -= employee.pay()
+            employee.card += employee.pay()

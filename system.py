@@ -5,11 +5,17 @@ A very advanced employee management system
 import logging
 from dataclasses import dataclass
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
 FIXED_PAYOUT_DAYS = 5
 SINGLE_HOLIDAY = 1
 
 
 class PayoutHolidayError(Exception):
+    "This is an exceptional scenario when vacation_days < FIXED_PAYOUT_DAYS"
+
     def __init__(self, fullname, vacation_days):
         self.fullname = fullname
         self.vacation_days = vacation_days
@@ -20,6 +26,8 @@ class PayoutHolidayError(Exception):
 
 
 class SingleHolidayError(Exception):
+    "This is an exceptional scenario when vacation_days < SINGLE_HOLIDAY"
+
     def __init__(self, fullname, vacation_days):
         self.fullname = fullname
         self.vacation_days = vacation_days
@@ -30,6 +38,8 @@ class SingleHolidayError(Exception):
 
 
 class PayAllError(Exception):
+    "This is an exceptional scenario when bank_account < employee.pay()"
+
     def __init__(self, title, bank_account, employee):
         self.title = title
         self.bank_account = bank_account
@@ -38,11 +48,6 @@ class PayAllError(Exception):
     def __str__(self):
         return f"{self.title} does not have enough money in its bank account. " \
                f"Remaining balance: %d. Requested: %d" % (self.bank_account, self.employee.pay())
-
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
 
 
 # noinspection PyTypeChecker
